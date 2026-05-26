@@ -76,7 +76,7 @@ If the LLM call fails or the API key is missing, the agent falls back to determi
 
 ## Outputs
 
-Each run regenerates the following files:
+Each run is treated as a full refresh and regenerates the following files:
 
 ```text
 data/subscription_user_months.csv
@@ -85,6 +85,13 @@ data/quality_checks_results.json
 reports/churn_revenue_report.md
 reports/agent_run_log.json
 ```
+
+`reports/churn_revenue_report.md` always reflects the latest run:
+
+- if data quality checks pass, it contains the business report;
+- if data quality checks fail, it contains a failure report with failed check names and details.
+
+When data quality checks fail, the CLI exits with status code `1`. This makes the agent easier to use from schedulers, CI jobs or orchestration tools.
 
 ---
 
@@ -162,6 +169,8 @@ The agent performs the role of a reporting analyst:
 5. generates a structured business report;
 6. writes an execution log.
 
+If data quality checks fail, the agent stops before anomaly detection and business report generation. In that case it writes a failure report to `reports/churn_revenue_report.md` instead of leaving a stale report from a previous successful run.
+
 ---
 
 ## Agent architecture
@@ -191,6 +200,7 @@ Available tools:
 | run_quality_checks | Validate input data and calculated metrics |
 | detect_anomalies | Flag unusual revenue, churn or ARPU movements |
 | generate_report | Build the final markdown report |
+| generate_failure_report | Build a markdown failure report when data quality checks fail |
 
 ---
 
@@ -224,6 +234,8 @@ def decide_next_action(state):
 ```
 
 This makes the workflow explicit and easy to inspect.
+
+On every run, the previous `reports/churn_revenue_report.md` is removed before the workflow starts. This prevents a failed run from leaving an old successful report on disk.
 
 ---
 
@@ -278,6 +290,8 @@ The LLM does not calculate metrics. It only helps phrase the business interpreta
 
 If the LLM call fails, the agent falls back to deterministic report generation.
 
+If data quality checks fail, the LLM is not called. The agent writes a deterministic failure report with the failed checks and stops.
+
 ---
 
 ## Prompts used in LLM mode
@@ -293,13 +307,14 @@ Do not invent numbers.
 Do not create claims that are not supported by the data.
 Reference specific months when describing trends.
 Keep the report concise and business-oriented.
+Use the section names requested by the user exactly.
 """
 ```
 
 ```python
 REPORT_PROMPT = """
 Given the monthly metrics table, anomaly flags and data quality results,
-produce a short report with the following sections:
+produce a short markdown report with exactly these section headings:
 
 1. Executive summary
 2. Monthly revenue trend
@@ -308,7 +323,10 @@ produce a short report with the following sections:
 5. Data quality checks
 6. Business interpretation
 
-Include 2-3 business conclusions.
+Do not add extra top-level sections.
+If the anomaly list is not empty, mention those anomalies in the Data quality checks section.
+Do not say there are no anomalies when anomalies are provided.
+Include 2-3 business conclusions inside the Business interpretation section.
 """
 ```
 
@@ -342,6 +360,14 @@ The agent also performs basic metric validation:
 - churn rate must be between 0 and 1;
 - ARPU cannot be negative;
 - monthly revenue cannot be negative.
+
+If any check fails:
+
+- `data/quality_checks_results.json` stores the full check result;
+- `reports/churn_revenue_report.md` is written as a failure report;
+- `reports/agent_run_log.json` records `quality_failed = true`;
+- the workflow stops before anomaly detection and business report generation;
+- `src/main.py` exits with status code `1`.
 
 ---
 
@@ -415,6 +441,7 @@ anomaly_detection:
 agent:
   max_tool_calls: 10
   default_mode: deterministic
+  openai_model: gpt-4o-mini
 ```
 
 ---

@@ -12,7 +12,9 @@ Current assumptions:
 
 - all users belong to a single cohort acquired in month 1;
 - no new users are acquired after month 1;
-- each user has exactly one subscription plan;
+- the product has multiple available plans: Basic, Plus and Premium;
+- each user is assigned exactly one plan at signup;
+- a user cannot have multiple plans at the same time;
 - a user's plan does not change over time;
 - each user can have at most one payment attempt per month;
 - there are no upgrades, downgrades, add-ons, refunds, discounts, taxes or multiple invoices;
@@ -21,6 +23,19 @@ Current assumptions:
 - an active user can still have a failed payment in a given month.
 
 These assumptions make the dataset easy to inspect and the metrics easy to reproduce.
+
+## Run Outputs And Failure Reports
+
+Each agent run is treated as a full refresh. The previous `reports/churn_revenue_report.md` is removed before the workflow starts, then the latest run writes a new report.
+
+The report can have two meanings:
+
+- if data quality checks pass, it is a business report based on validated metrics;
+- if data quality checks fail, it is a failure report that lists failed checks and explains why the business report was not generated.
+
+This prevents users from accidentally reading a stale business report after a failed run.
+
+When data quality checks fail, the agent stops before anomaly detection and LLM-assisted report generation. The failure report is deterministic and does not require an LLM call.
 
 ## Why An Active User Can Be Non-Paying
 
