@@ -38,12 +38,16 @@ def main() -> None:
     result = agent.run()
 
     print(f"Agent run status: {result['status']}")
-    print("Generated files:")
+    print("Run artifacts:")
     print("- data/subscription_user_months.csv")
     print("- data/monthly_metrics.csv")
     print("- data/quality_checks_results.json")
     print("- reports/churn_revenue_report.md")
     print("- reports/agent_run_log.json")
+
+    if result["status"] != "success":
+        print("The report contains failure details because the run did not complete successfully.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

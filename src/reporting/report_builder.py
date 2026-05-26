@@ -9,6 +9,48 @@ import pandas as pd
 from src.reporting.prompts import REPORT_PROMPT, SYSTEM_PROMPT
 
 
+def build_failure_report(
+    quality_result: dict[str, Any],
+    output_path: str | Path,
+) -> str:
+    """Build a markdown report for failed data quality checks."""
+    failed_checks = [check for check in quality_result.get("checks", []) if not check.get("passed")]
+    failed_lines = "\n".join(
+        f"- `{check.get('check', 'unknown_check')}`: {check.get('details', 'No details provided')}"
+        for check in failed_checks
+    ) or "- No failed checks were reported."
+
+    report_text = f"""# Churn & Revenue Report
+
+## Run status
+
+FAILED
+
+## Failure reason
+
+Data quality checks failed. The business report was not generated because the input data or calculated metrics did not pass validation.
+
+## Failed quality checks
+
+{failed_lines}
+
+## Generated artifacts
+
+- `data/quality_checks_results.json`
+- `reports/agent_run_log.json`
+- `reports/churn_revenue_report.md`
+
+## Next steps
+
+Fix the failed data quality checks and rerun the agent.
+"""
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(report_text, encoding="utf-8")
+    return report_text
+
+
 def build_report(
     metrics: pd.DataFrame,
     quality_result: dict[str, Any],

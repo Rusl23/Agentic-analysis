@@ -9,7 +9,7 @@ from src.pipeline.anomaly_detector import detect_anomalies as _detect_anomalies
 from src.pipeline.generate_data import generate_subscription_data
 from src.pipeline.metrics import calculate_monthly_metrics
 from src.pipeline.quality_checks import run_quality_checks as _run_quality_checks
-from src.reporting.report_builder import build_report
+from src.reporting.report_builder import build_failure_report, build_report
 
 
 class AgentTools:
@@ -31,6 +31,9 @@ class AgentTools:
 
     def run_quality_checks(self, data: pd.DataFrame, metrics: pd.DataFrame) -> dict[str, Any]:
         return _run_quality_checks(data, metrics, self.config, self.quality_path)
+
+    def generate_failure_report(self, quality_result: dict[str, Any]) -> str:
+        return build_failure_report(quality_result, self.report_path)
 
     def detect_anomalies(self, metrics: pd.DataFrame) -> list[dict[str, Any]]:
         return _detect_anomalies(metrics, self.config)

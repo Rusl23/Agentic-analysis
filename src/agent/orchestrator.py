@@ -33,6 +33,7 @@ class ReportingAgent:
         self.anomalies: list[dict[str, Any]] = []
 
     def run(self) -> dict[str, Any]:
+        self._prepare_outputs()
         max_tool_calls = int(self.config.get("agent", {}).get("max_tool_calls", 10))
         tool_calls = 0
 
@@ -86,6 +87,8 @@ class ReportingAgent:
             self.state.quality_checked = True
             self.state.quality_failed = not bool(self.quality_result.get("passed"))
             if self.state.quality_failed:
+                self.tools.generate_failure_report(self.quality_result)
+                ensure_file_exists(self.tools.report_path, "failure report")
                 self._log(action, "Quality checks failed")
             else:
                 ensure_quality_passed(self.quality_result)
@@ -109,6 +112,10 @@ class ReportingAgent:
             return
 
         raise ValueError(f"Unknown action: {action}")
+
+    def _prepare_outputs(self) -> None:
+        """Remove stale report artifacts before a full-refresh run."""
+        self.tools.report_path.unlink(missing_ok=True)
 
     def _log(self, action: str, message: str) -> None:
         self.log.append(

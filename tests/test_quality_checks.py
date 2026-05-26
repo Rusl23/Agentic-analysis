@@ -2,6 +2,7 @@ import pandas as pd
 
 from src.pipeline.metrics import calculate_monthly_metrics
 from src.pipeline.quality_checks import run_quality_checks
+from src.reporting.report_builder import build_failure_report
 
 
 CONFIG = {
@@ -39,3 +40,31 @@ def test_quality_checks_fail_on_negative_payment():
     assert result["passed"] is False
     failed = [check["check"] for check in result["checks"] if not check["passed"]]
     assert "no_negative_payments" in failed
+
+
+def test_failure_report_contains_failed_quality_checks(tmp_path):
+    quality_result = {
+        "passed": False,
+        "checks": [
+            {
+                "check": "no_negative_payments",
+                "passed": False,
+                "details": "Negative payments: 1",
+            },
+            {
+                "check": "month_range_is_complete",
+                "passed": True,
+                "details": "Months found: [1, 2]",
+            },
+        ],
+    }
+    output_path = tmp_path / "churn_revenue_report.md"
+
+    report_text = build_failure_report(quality_result, output_path)
+
+    assert output_path.exists()
+    assert "FAILED" in report_text
+    assert "Data quality checks failed" in report_text
+    assert "no_negative_payments" in report_text
+    assert "Negative payments: 1" in report_text
+    assert "month_range_is_complete" not in report_text
