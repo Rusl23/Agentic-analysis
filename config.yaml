@@ -1,0 +1,29 @@
+seed: 42
+cohort_size: 1000
+months: 12
+
+plans:
+  Basic: 9.99
+  Plus: 19.99
+  Premium: 29.99
+
+plan_distribution:
+  Basic: 0.55
+  Plus: 0.30
+  Premium: 0.15
+
+churn:
+  base_rate: 0.04
+  monthly_increase: 0.008
+
+payment_failure_rate: 0.03
+
+anomaly_detection:
+  revenue_drop_threshold_pct: 0.15
+  churn_rate_high_threshold: 0.10
+  arpu_change_threshold_pct: 0.10
+
+agent:
+  max_tool_calls: 10
+  default_mode: deterministic
+  openai_model: gpt-4o-mini

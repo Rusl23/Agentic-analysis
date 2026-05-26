@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "check": "required_columns_exist",
+      "passed": true,
+      "details": "Required columns: ['user_id', 'month', 'plan', 'monthly_price', 'payment_status', 'amount_paid', 'is_active']"
+    },
+    {
+      "check": "no_nulls_in_required_fields",
+      "passed": true,
+      "details": "Null values found: 0"
+    },
+    {
+      "check": "user_count_is_correct",
+      "passed": true,
+      "details": "Unique users: 1000, expected: 1000"
+    },
+    {
+      "check": "month_range_is_complete",
+      "passed": true,
+      "details": "Months found: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+    },
+    {
+      "check": "one_row_per_user_per_month",
+      "passed": true,
+      "details": "Duplicates: 0"
+    },
+    {
+      "check": "payment_statuses_are_valid",
+      "passed": true,
+      "details": "Invalid statuses: []"
+    },
+    {
+      "check": "plans_are_valid",
+      "passed": true,
+      "details": "Invalid plans: []"
+    },
+    {
+      "check": "no_negative_payments",
+      "passed": true,
+      "details": "Negative payments: 0"
+    },
+    {
+      "check": "failed_payments_have_zero_amount",
+      "passed": true,
+      "details": "Failed rows with non-zero amount: 0"
+    },
+    {
+      "check": "paid_payments_have_positive_amount",
+      "passed": true,
+      "details": "Paid rows with non-positive amount: 0"
+    },
+    {
+      "check": "inactive_users_have_zero_revenue",
+      "passed": true,
+      "details": "Inactive rows with non-zero revenue: 0"
+    },
+    {
+      "check": "paid_users_do_not_exceed_active_users",
+      "passed": true,
+      "details": "paid_users <= active_users for all months"
+    },
+    {
+      "check": "revenue_reconciliation_passes",
+      "passed": true,
+      "details": "Max revenue diff: 0.0"
+    },
+    {
+      "check": "churned_users_non_negative",
+      "passed": true,
+      "details": "Metric validation"
+    },
+    {
+      "check": "churn_rate_between_0_and_1",
+      "passed": true,
+      "details": "Metric validation"
+    },
+    {
+      "check": "arpu_non_negative",
+      "passed": true,
+      "details": "Metric validation"
+    },
+    {
+      "check": "monthly_revenue_non_negative",
+      "passed": true,
+      "details": "Metric validation"
+    }
+  ]
+}
