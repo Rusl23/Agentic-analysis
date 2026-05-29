@@ -177,6 +177,10 @@ If data quality checks fail, the agent stops before anomaly detection and busine
 
 The workflow is state-based.
 
+![Churn and revenue reporting agent architecture](docs/agent_architecture.svg)
+
+The deterministic workflow calculates metrics, runs data quality checks and detects anomalies before any optional LLM step. The LLM-assisted path is used only for the final report narrative after validated analytical context is available. If data quality checks fail, the same `reports/churn_revenue_report.md` artifact is still written, but it contains DQ error details instead of the business narrative.
+
 ```text
 Agent state
     ↓

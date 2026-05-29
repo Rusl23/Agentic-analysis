@@ -1,0 +1,215 @@
+<svg width="1600" height="940" viewBox="0 0 1600 940" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Churn and Revenue Reporting Agent Architecture</title>
+  <desc id="desc">A clean workflow diagram showing the automated deterministic pipeline, the validation gate, and the point where the optional LLM report agent connects.</desc>
+  <defs>
+    <radialGradient id="bg" cx="52%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#252346"/>
+      <stop offset="54%" stop-color="#11142a"/>
+      <stop offset="100%" stop-color="#070814"/>
+    </radialGradient>
+    <linearGradient id="node" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#303247"/>
+      <stop offset="100%" stop-color="#202236"/>
+    </linearGradient>
+    <linearGradient id="agent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3c3659"/>
+      <stop offset="100%" stop-color="#25243d"/>
+    </linearGradient>
+    <linearGradient id="success" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2f765f"/>
+      <stop offset="100%" stop-color="#1c403d"/>
+    </linearGradient>
+    <linearGradient id="failure" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#713248"/>
+      <stop offset="100%" stop-color="#3b1f34"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="15" flood-color="#000000" flood-opacity="0.28"/>
+    </filter>
+    <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.3" fill="#ffffff" opacity="0.11"/>
+    </pattern>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2 L10 6 L2 10 Z" fill="#cfd1df"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2 L10 6 L2 10 Z" fill="#82e7b6"/>
+    </marker>
+    <marker id="arrowRed" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M2 2 L10 6 L2 10 Z" fill="#ff8fa7"/>
+    </marker>
+    <style>
+      .title { font: 700 38px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f5f4ff; }
+      .subtitle { font: 500 18px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #b9b8cc; }
+      .lane { fill: #101326; stroke: #343751; stroke-width: 1.5; opacity: 0.86; }
+      .lane-title { font: 700 16px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #c8c7dc; letter-spacing: 0.2px; }
+      .node { fill: url(#node); stroke: #aeb0c4; stroke-width: 2.5; filter: url(#shadow); }
+      .agent { fill: url(#agent); stroke: #d4d2e7; stroke-width: 3; filter: url(#shadow); }
+      .success { fill: url(#success); stroke: #82e7b6; stroke-width: 2.5; filter: url(#shadow); }
+      .failure { fill: url(#failure); stroke: #ff8fa7; stroke-width: 2.5; filter: url(#shadow); }
+      .output { fill: #232439; stroke: #646680; stroke-width: 2; filter: url(#shadow); }
+      .label { font: 700 21px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #f8f7ff; }
+      .sub { font: 500 15px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #bbb9ce; }
+      .small { font: 600 13px Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #aaa9bd; }
+      .code { font: 600 13px "SFMono-Regular", Consolas, "Liberation Mono", monospace; fill: #d4d5e5; }
+      .line { stroke: #cfd1df; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); }
+      .line-green { stroke: #82e7b6; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrowGreen); }
+      .line-red { stroke: #ff8fa7; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrowRed); }
+      .line-soft { stroke: #9fa0b7; stroke-width: 2.5; stroke-dasharray: 8 10; stroke-linecap: round; stroke-linejoin: round; marker-end: url(#arrow); opacity: 0.9; }
+      .chip { fill: #17192d; stroke: #484b66; stroke-width: 1.4; }
+      .port { fill: #d8d9e7; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="940" fill="url(#bg)"/>
+  <rect width="1600" height="940" fill="url(#dots)"/>
+  <circle cx="820" cy="380" r="430" fill="#6657ff" opacity="0.06"/>
+  <circle cx="1290" cy="300" r="260" fill="#22d2a2" opacity="0.04"/>
+
+  <text x="72" y="76" class="title">Churn &amp; Revenue Reporting Agent</text>
+  <text x="74" y="112" class="subtitle">The LLM is not part of metric calculation or DQ. It connects only after the automated workflow has produced validated analytical context.</text>
+
+  <!-- Lanes -->
+  <rect x="60" y="156" width="1480" height="378" rx="26" class="lane"/>
+  <text x="86" y="188" class="lane-title">AUTOMATED WORKFLOW - deterministic tools, no LLM reasoning</text>
+
+  <rect x="60" y="570" width="1480" height="220" rx="26" class="lane"/>
+  <text x="86" y="602" class="lane-title">REPORTING LAYER - optional LLM narrative after validation</text>
+
+  <!-- Trigger and orchestrator -->
+  <rect x="88" y="280" width="160" height="118" rx="20" class="node"/>
+  <circle cx="248" cy="339" r="9" class="port"/>
+  <path d="M137 307 L120 340 H147 L132 373 L180 327 H153 L165 307 H137 Z" fill="#ffb35c"/>
+  <text x="118" y="430" class="label">Trigger</text>
+  <text x="104" y="456" class="sub">CLI / scheduler</text>
+
+  <rect x="316" y="256" width="246" height="166" rx="22" class="agent"/>
+  <circle cx="316" cy="339" r="9" class="port"/>
+  <circle cx="562" cy="339" r="9" class="port"/>
+  <path d="M362 294 H412 C431 294 446 309 446 328 V334 C446 353 431 368 412 368 H362 C343 368 328 353 328 334 V328 C328 309 343 294 362 294 Z" fill="#ffffff" opacity="0.94"/>
+  <circle cx="367" cy="331" r="6" fill="#28283e"/>
+  <circle cx="407" cy="331" r="6" fill="#28283e"/>
+  <path d="M379 349 H396" stroke="#28283e" stroke-width="4" stroke-linecap="round"/>
+  <text x="374" y="388" class="label">Workflow</text>
+  <text x="360" y="414" class="label">Orchestrator</text>
+  <text x="354" y="444" class="sub">state + decision engine</text>
+  <text x="350" y="468" class="small">orchestrates tools only</text>
+
+  <!-- Deterministic pipeline -->
+  <rect x="628" y="228" width="188" height="120" rx="18" class="node"/>
+  <circle cx="628" cy="288" r="8" class="port"/>
+  <circle cx="816" cy="288" r="8" class="port"/>
+  <path d="M676 264 H725 M676 288 H762 M676 312 H742" stroke="#43d2c8" stroke-width="8" stroke-linecap="round"/>
+  <text x="654" y="378" class="label">Generate</text>
+  <text x="677" y="403" class="label">data</text>
+  <text x="626" y="430" class="sub">synthetic user-months</text>
+
+  <rect x="882" y="228" width="188" height="120" rx="18" class="node"/>
+  <circle cx="882" cy="288" r="8" class="port"/>
+  <circle cx="1070" cy="288" r="8" class="port"/>
+  <path d="M928 318 V269 M960 318 V285 M992 318 V252 M1024 318 V277" stroke="#91dc70" stroke-width="10" stroke-linecap="round"/>
+  <text x="916" y="378" class="label">Calculate</text>
+  <text x="925" y="403" class="label">metrics</text>
+  <text x="891" y="430" class="sub">revenue, churn, ARPU</text>
+
+  <rect x="1136" y="228" width="188" height="120" rx="18" class="node"/>
+  <circle cx="1136" cy="288" r="8" class="port"/>
+  <circle cx="1324" cy="288" r="8" class="port"/>
+  <path d="M1189 286 L1215 312 L1266 258" stroke="#82e7b6" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1172" y="378" class="label">Run DQ</text>
+  <text x="1162" y="403" class="label">checks</text>
+  <text x="1150" y="430" class="sub">guardrails + JSON</text>
+
+  <!-- Gate -->
+  <rect x="1364" y="232" width="120" height="112" rx="20" class="success"/>
+  <circle cx="1364" cy="288" r="8" class="port"/>
+  <circle cx="1424" cy="344" r="8" class="port"/>
+  <circle cx="1484" cy="288" r="8" class="port"/>
+  <path d="M1424 258 L1458 288 L1424 318 L1390 288 Z" stroke="#c9ffe0" stroke-width="6" stroke-linejoin="round"/>
+  <text x="1360" y="378" class="label">DQ passed?</text>
+  <text x="1379" y="404" class="sub">quality gate</text>
+
+  <rect x="1276" y="86" width="188" height="96" rx="18" class="node"/>
+  <circle cx="1276" cy="134" r="8" class="port"/>
+  <circle cx="1464" cy="134" r="8" class="port"/>
+  <path d="M1322 148 L1348 112 L1372 148 L1398 112 L1422 148" stroke="#ffd166" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="1276" y="210" class="label">Detect anomalies</text>
+  <text x="1294" y="235" class="sub">threshold rules</text>
+
+  <!-- Failure branch -->
+  <rect x="1214" y="462" width="304" height="118" rx="18" class="failure"/>
+  <circle cx="1366" cy="462" r="8" class="port"/>
+  <path d="M1244 491 L1304 551 M1304 491 L1244 551" stroke="#ffc2cf" stroke-width="8" stroke-linecap="round"/>
+  <text x="1328" y="498" class="label">Failure report</text>
+  <text x="1328" y="524" class="code">churn_revenue_report.md</text>
+  <text x="1328" y="548" class="sub">DQ error details instead</text>
+  <text x="1328" y="570" class="sub">of business narrative</text>
+
+  <!-- Reporting layer -->
+  <rect x="166" y="646" width="210" height="94" rx="18" class="output"/>
+  <text x="188" y="684" class="label">Validated</text>
+  <text x="188" y="710" class="label">context</text>
+  <text x="188" y="734" class="sub">metrics + DQ + anomalies</text>
+
+  <rect x="472" y="626" width="258" height="134" rx="22" class="agent"/>
+  <circle cx="472" cy="693" r="9" class="port"/>
+  <circle cx="730" cy="693" r="9" class="port"/>
+  <path d="M526 660 H574 C593 660 608 675 608 694 V698 C608 717 593 732 574 732 H526 C507 732 492 717 492 698 V694 C492 675 507 660 526 660 Z" fill="#ffffff" opacity="0.94"/>
+  <circle cx="531" cy="696" r="6" fill="#28283e"/>
+  <circle cx="569" cy="696" r="6" fill="#28283e"/>
+  <path d="M542 713 H558" stroke="#28283e" stroke-width="4" stroke-linecap="round"/>
+  <text x="622" y="676" class="label">LLM</text>
+  <text x="622" y="703" class="label">Report Agent</text>
+  <text x="516" y="785" class="sub">optional narrative only</text>
+
+  <rect x="816" y="646" width="230" height="94" rx="18" class="output"/>
+  <circle cx="816" cy="693" r="8" class="port"/>
+  <circle cx="1046" cy="693" r="8" class="port"/>
+  <path d="M862 671 H1000 M862 693 H972 M862 715 H1015" stroke="#b79cff" stroke-width="7" stroke-linecap="round"/>
+  <text x="852" y="774" class="label">Markdown report</text>
+
+  <rect x="1132" y="646" width="270" height="94" rx="18" class="output"/>
+  <circle cx="1132" cy="693" r="8" class="port"/>
+  <text x="1162" y="685" class="code">reports/</text>
+  <text x="1162" y="710" class="code">churn_revenue_report.md</text>
+  <text x="1162" y="735" class="code">agent_run_log.json</text>
+
+  <!-- Supporting inputs -->
+  <rect x="88" y="820" width="272" height="54" rx="16" class="chip"/>
+  <text x="112" y="853" class="code">config.yaml: seed, thresholds, model</text>
+
+  <rect x="472" y="820" width="210" height="54" rx="16" class="chip"/>
+  <text x="496" y="853" class="code">OpenAI API, optional</text>
+
+  <!-- Main arrows -->
+  <path d="M248 339 H304" class="line"/>
+  <path d="M562 339 H600 C616 339 620 324 620 308 C620 296 620 288 620 288 H616" class="line"/>
+  <path d="M816 288 H870" class="line"/>
+  <path d="M1070 288 H1124" class="line"/>
+  <path d="M1324 288 H1352" class="line"/>
+
+  <!-- Success route: DQ gate, anomaly detection, then validated reporting context. -->
+  <path d="M1484 288 H1518 V134 H1476" class="line-green"/>
+  <text x="1498" y="276" class="small">true</text>
+  <path d="M1276 134 H270 V634" class="line-green"/>
+
+  <!-- Failure route -->
+  <path d="M1424 344 V432 H1366 V450" class="line-red"/>
+  <text x="1438" y="368" class="small">false</text>
+
+  <!-- Reporting arrows -->
+  <path d="M376 693 H460" class="line"/>
+  <path d="M730 693 H804" class="line"/>
+  <path d="M1046 693 H1120" class="line"/>
+
+  <!-- Context and API helper arrows -->
+  <path d="M577 820 V772" class="line-soft"/>
+  <path d="M224 820 V752" class="line-soft"/>
+
+  <!-- Legend -->
+  <rect x="1214" y="812" width="288" height="72" rx="18" fill="#121426" stroke="#484b66" stroke-width="1.4"/>
+  <line x1="1240" y1="836" x2="1290" y2="836" class="line" marker-end="none"/>
+  <text x="1308" y="842" class="small">workflow/data flow</text>
+  <line x1="1240" y1="864" x2="1290" y2="864" class="line-soft" marker-end="none"/>
+  <text x="1308" y="870" class="small">config/API dependency</text>
+</svg>
